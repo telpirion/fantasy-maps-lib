@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fantasy_maps_lib"
+description = "A library for use with the FantasyMaps project"
+license = {file = "LICENSE"}
+dynamic = ["version"]
+dependencies = [
+  "google-cloud-aiplatform",
+  "google-cloud-firestore",
+  "google-cloud-storage",
+  "imgaug", 
+  "jsonlines",
+  "pillow",
+  "pytest"  
+]
+requires-python = ">= 3.8"
+authors = [
+  {name = "Eric Schmidt", email = "eric.schmidt@telpirion.com"}
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Other Audience",
+    "License :: OSI Approved :: MIT License",  
+    "Operating System :: POSIX :: Linux",        
+    "Programming Language :: Python :: 3.8",
+]
+
+[project.optional-dependencies]
+dev = ["ipython"]
+
