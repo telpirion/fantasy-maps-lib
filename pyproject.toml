@@ -8,6 +8,7 @@ description = "A library for use with the FantasyMaps project"
 license = {file = "LICENSE"}
 dynamic = ["version"]
 dependencies = [
+  "black",
   "google-cloud-aiplatform",
   "google-cloud-firestore",
   "google-cloud-storage",

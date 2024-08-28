@@ -115,6 +115,7 @@ def convert_batch_predictions_to_training_data(
         None if all predictions are below the minimum confidence value
     """
     try:
+        print(json_data)
         image_gcs_uri = json_data["instance"]["content"]
         prediction = json_data["prediction"]
         bboxes = []
