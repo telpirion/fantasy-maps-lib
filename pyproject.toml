@@ -14,6 +14,7 @@ dependencies = [
   "google-cloud-storage",
   "imgaug", 
   "jsonlines",
+  "pandas",
   "pillow",
   "pytest"  
 ]
