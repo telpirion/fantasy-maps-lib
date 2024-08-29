@@ -50,7 +50,12 @@ def hashes():
 
 @pytest.fixture
 def img_data_dict(img):
-    return {"width": img[1], "height": img[2], "columns": img[3], "rows": img[4]}
+    return {
+        "width": img[1],
+        "height": img[2],
+        "columns": img[3],
+        "rows": img[4]
+      }
 
 
 def test_convert_image_to_hash(img_content_bytes, hashes):
@@ -63,7 +68,8 @@ def test_convert_image_to_hash(img_content_bytes, hashes):
 
 def test_download_image_local(img_resource_dir, hashes):
     path = os.path.join(img_resource_dir, "tmp.jpg")
-    success = extract.download_image_local(url=IMG_URL, path=path, hashes=hashes)
+    success = extract.download_image_local(url=IMG_URL, path=path,
+                                           hashes=hashes)
     assert success
     assert len(hashes) == 3
     actual_new_hash = hashes[2]
@@ -96,22 +102,40 @@ def test_compute_bboxes(img, img_data_dict):
         cell_height=img[2] / img[4],
     )
     assert len(actual_bboxes) != 0
-    actual_first_bbox = actual_bboxes[0]
 
     """Calculations for first bounding box:
 
-    In pixels, the min points [(32,32), (64,64)]; thus the bbox should go 1 pixel
-    around the outside: [(31,31), (65,65)]
+    In pixels, the min points [(32,32), (64,64)]; thus the bbox should go 1
+    pixel around the outside: [(31,31), (65,65)]
 
     xMin = 31 / 640 = 0.0484375
     yMin = 31 / 640 = 0.0484375
     xMax = 65 / 640 = 0.1015625
     yMax = 65 / 640 = 0.1015625
     """
-    expected_xmax = 0.1015625
-    expected_ymax = expected_xmax
+    actual_first_bbox = actual_bboxes[0]
+    expected_x_max = 0.1015625
+    expected_y_max = expected_x_max
 
-    assert math.isclose(actual_first_bbox['xMax'], expected_xmax)
-    assert math.isclose(actual_first_bbox['yMax'], expected_ymax)
+    assert math.isclose(actual_first_bbox['xMax'], expected_x_max)
+    assert math.isclose(actual_first_bbox['yMax'], expected_y_max)
     assert math.isclose(actual_first_bbox['xMin'], 0.0484375)
     assert math.isclose(actual_first_bbox['yMin'], 0.0484375)
+
+    """Calculations for last bounding box:
+
+    In pixels, the min points [(576,576), (608,608)]; thus the bbox should go 1
+    pixel around the outside: [(575,575), (609,609)]
+
+    xMin = 575 / 640 = 0.8984375
+    yMin = 575 / 640 = 0.8984375
+    xMax = 609 / 640 = 0.9515625
+    yMax = 609 / 640 = 0.9515625
+    """
+    actual_last_bbox = actual_bboxes[-1]
+    expected_x_min = expected_y_min = 0.8984375
+    expected_x_max = expected_y_max = 0.9515625
+    assert math.isclose(actual_last_bbox['xMax'], expected_x_max)
+    assert math.isclose(actual_last_bbox['yMax'], expected_y_max)
+    assert math.isclose(actual_last_bbox['xMin'], expected_x_min)
+    assert math.isclose(actual_last_bbox['yMin'], expected_y_min)

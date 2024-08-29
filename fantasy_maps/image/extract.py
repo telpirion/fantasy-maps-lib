@@ -126,34 +126,42 @@ def compute_bboxes(
     """
     bboxes = []
     try:
-        if img_data_dict is not None:
+        if img_data_dict:
             width = img_data_dict['width']
             height = img_data_dict['height']
+            columns = img_data_dict['columns']
+            rows = img_data_dict['rows']
         else:
             return bboxes
 
         BORDER = 1  # 1px border around the outside of the cell
         LABEL = 'cell'
 
-        curr_x = cell_width
-        while curr_x < width:
-            curr_y = cell_height
-            while curr_y < height:
-                x_min = (curr_x - BORDER) / width
-                y_min = (curr_y - BORDER) / height
-                x_max = (curr_x + cell_width + BORDER) / width
-                y_max = (curr_y + cell_height + BORDER) / height
-                bboxes.append(
-                    {
-                        'xMin': x_min,
-                        'xMax': x_max,
-                        'yMin': y_min,
-                        'yMax': y_max,
-                        'displayName': LABEL,
-                    }
-                )
-                curr_y = curr_y + cell_height
-            curr_x = curr_x + cell_width
+        x_coords = []
+        curr_x_min = cell_width - BORDER
+        curr_x_max = (2 * cell_width) + BORDER
+        for _ in range(0, columns - 2):
+            x_coords.append({
+                'xMin': curr_x_min / width,
+                'xMax': curr_x_max / width,
+            })
+            curr_x_min += cell_width
+            curr_x_max += cell_width
+
+        curr_y_min = cell_height - BORDER
+        curr_y_max = (2 * cell_height) + BORDER
+        for _ in range(0, rows - 2):
+            tmp_bboxes = [{
+                'xMax': x['xMax'],
+                'xMin': x['xMin'],
+                'yMax': curr_y_max / height,
+                'yMin': curr_y_min / height,
+                'displayName': LABEL,
+            } for x in x_coords]
+            bboxes = bboxes + tmp_bboxes
+            curr_y_min += cell_height
+            curr_y_max += cell_height
+
     except Exception:
         print(f'Error: {img_data_dict}')
 
