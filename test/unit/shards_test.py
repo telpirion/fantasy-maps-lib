@@ -73,5 +73,5 @@ def test_create_shard_path(img):
     actual_str = shards.create_shard_path(
         path=img.path, x_min=0, y_min=0, cols=10, rows=10
     )
-    assert actual_str != ""
-    assert actual_str.index(".jpg") != -1
+    assert actual_str != ''
+    assert actual_str.index('.jpg') != -1
