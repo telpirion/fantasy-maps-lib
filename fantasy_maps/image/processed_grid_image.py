@@ -12,8 +12,8 @@ from google.cloud import storage
 class ProcessedGridImage:
     """A wrapper that combines image plotting and bounding boxes.
 
-    This class combines image plotting features from imageio, imguag, and pillow
-    with extraction techniques for Vertex AI prediction outputs.
+    This class combines image plotting features from imageio, imguag, and
+    Pillow with extraction techniques for Vertex AI prediction outputs.
     """
 
     CONFIDENCE_THRESHOLD = 0.7
@@ -36,9 +36,10 @@ class ProcessedGridImage:
           width: the width of the image in pixels
           height: the height of the image in pixels
           bboxes: the bounding boxes of the objects detected on the image
-          confidences: the confidence scores of the objects detected on the image
-          drift_amount: a fudge factor for normalizing bounding boxes outside of
-            the bounds of the actual gridlines
+          confidences: the confidence scores of the objects detected
+          on the image
+          drift_amount: a fudge factor for normalizing bounding boxes 
+          outside of the bounds of the actual gridlines
           local_file_uri: the filepath to the image file, local file
           gcs_file_uri: the Cloud Storage URI (gs://) to the image file
 
@@ -70,7 +71,8 @@ class ProcessedGridImage:
         return str(self.get_normalized_json_dnd())
 
     def show(self):
-        """Shows the predicted bounding boxes overlaid on the original image."""
+        """Shows the predicted bounding boxes overlaid on the original image.
+        """
         if len(self.bboxes_on_image) == 0:
             self._compute_actual_bboxes()
 
@@ -80,8 +82,8 @@ class ProcessedGridImage:
         """Shows normalized values for bounding boxes, based upon predictions.
 
         Args:
-          is_grid_based: determines whether to show cells based upon inferred grid
-            width and height
+          is_grid_based: determines whether to show cells based upon inferred
+            grid width and height
         """
         if not is_grid_based:
             if len(self.normalized_bboxes) == 0:
@@ -134,7 +136,8 @@ class ProcessedGridImage:
         """Saves image and bounding boxes as Vertex AI training data row.
 
         Args:
-            gcs_bucket: the Cloud Storage bucket to store the image, without 'gs://'
+            gcs_bucket: the Cloud Storage bucket to store the image, without
+                'gs://'
             gcs_prefix: the 'folder' in the bucket to store the image
             training_data_file: Optional. The Cloud Storage URI of the file to
                 append this training data to. Must be in gcs_bucket provided in
@@ -282,7 +285,9 @@ class ProcessedGridImage:
         ia.imshow(bbs.draw_on_image(image, size=2))
 
     def _compute_grid_based_boxes(self):
-        """PRIVATE. Calculates new boundings boxes based upon predicted grid-cell width and height"""
+        """PRIVATE. Calculates new boundings boxes based upon predicted
+        grid-cell width and height
+        """
         grid_based_boxes = []
         current_x = self.cell_offset_x
         current_y = self.cell_offset_y
@@ -309,14 +314,17 @@ class ProcessedGridImage:
         return grid_based_boxes
 
     def _compute_normalized_bboxes(self):
-        """PRIVATE. Calculates new boundings boxes based upon averge size of predicted bounding boxes."""
+        """PRIVATE. Calculates new boundings boxes based upon averge size of
+        predicted bounding boxes.
+        """
         if self.bboxes_on_image is None:
             self._compute_actual_bboxes()
 
         # Assumption 1. The confidence scores are ordered High => Low
         # Assumption 2. The confidences and bboxes arrays are in sync
         # Assumption 3. The bboxes are perfect squares
-        # Assumption 4. The bboxes have a tendency to be larger than the actual grid squares
+        # Assumption 4. The bboxes have a tendency to be larger than the actual
+        # grid squares
         top_confidences = None
         if len(self.confidences) > 10:
             top_confidences = self.confidences[0:10]
@@ -373,8 +381,9 @@ class ProcessedGridImage:
             )
 
 
-def analyze_annotation_results(result, *, local_file_uri) -> ProcessedGridImage:
-    """Converts a Vertex AI image object detection prediction to a ProcessedGridImage.
+def analyze_annotation_results(result, *, 
+                               local_file_uri) -> ProcessedGridImage:
+    """Converts Vertex image object detection prediction to ProcessedGridImage.
 
     Args:
       local_file_uri: filepath to a local copy of the image.

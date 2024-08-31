@@ -1,5 +1,18 @@
-import numpy as np
-import pandas as pd
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+from typing import Mapping, List, Union
+
 import praw
 import spacy
 
@@ -28,22 +41,27 @@ def get_reddit_posts(reddit_credentials, subreddit_name, limit):
     return reddit.subreddit(subreddit_name).hot(limit=limit)
 
 
-def convert_posts_to_dataframe(posts, columns):
+def convert_posts_to_dicts(
+        posts,
+        columns
+        ) -> Union[List[Mapping[str, str]], None]:
     """Convert a list of Reddit posts into a pandas.Dataframe.
 
     Arguments:
         posts (list): a list of Reddit posts
-        columns: the columns to use for the Dataframe
+        columns: the keys to use for the dicts; maximum of 4
 
     Returns:
-        a pandas.Dataframe
+        List of dicts
     """
-
-    filtered_posts = [[s.title, s.selftext, s.id, s.url] for s in posts]
-    filtered_posts = np.array(filtered_posts)
-    reddit_posts_df = pd.DataFrame(filtered_posts, columns=columns)
-
-    return reddit_posts_df
+    if len(columns) != 4:
+        return None
+    filtered_posts = [
+        {columns[0]: s.title,
+         columns[1]: s.selftext,
+         columns[2]: s.id,
+         columns[3]: s.url} for s in posts]
+    return filtered_posts
 
 
 def make_nice_filename(name):
@@ -56,7 +74,7 @@ def make_nice_filename(name):
         String. Format is `<adj.>-<nouns>.<cols>x<rows>.jpg`
     """
 
-    dims = re.findall("\d+x\d+", name)
+    dims = re.findall('\d+x\d+', name)
     if len(dims) == 0:
         return ""
 
