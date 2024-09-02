@@ -91,3 +91,9 @@ def test_make_nice_filename():
     actual_filename = posts.make_nice_filename(POST_NAME)
     assert actual_filename
     assert actual_filename.find('watermill') != -1
+
+
+def test_get_tokens():
+    actual_tokens = posts.get_tokens(POST_NAME)
+    assert actual_tokens
+    assert len(actual_tokens) > 0

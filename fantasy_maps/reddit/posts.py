@@ -64,7 +64,7 @@ def convert_posts_to_dicts(
     return filtered_posts
 
 
-def make_nice_filename(name):
+def make_nice_filename(name: str) -> str:
     """Converts Reddit post title into a meaningful(ish) filename.
 
     Arguments:
@@ -92,7 +92,7 @@ def make_nice_filename(name):
     return f"{new_name}.{dims[0]}x{dims[1]}.jpg"
 
 
-def get_tokens(title):
+def get_tokens(title: str) -> List[str]:
     """Analyzes a post for nouns, proper nouns, and adjectives.
 
     Arguments:
