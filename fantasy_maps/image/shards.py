@@ -26,8 +26,8 @@ def compute_shard_coordinates(
     num_shards: int,
     shard_cols: int = 20,
     shard_rows: int = 20,
-) -> Union[Iterable[tuple[str, str, str, str, str, str]], None]:
-    """Converts image data into 1 or more shards.
+) -> Union[Iterable[tuple[int, int, int, int, int, int]], None]:
+    """Converts an image into smaller images (shards).
 
     Arguments:
         img_metadata: the metadata of the source image
@@ -114,7 +114,8 @@ def create_shard(
 
         # Get new UID
         hashes = []
-        convert_image_to_hash(shard.tobytes(), hashes)
+        uid = convert_image_to_hash(shard.tobytes())
+        hashes.append(uid)
 
         shard.save(s_path)
 

@@ -54,20 +54,14 @@ def img_data_dict(img):
 
 
 def test_convert_image_to_hash(img_content_bytes, hashes):
-    success = extract.convert_image_to_hash(img_content_bytes, hashes)
-    assert success
-    assert len(hashes) == 3
-    actual_new_hash = hashes[2]
-    assert actual_new_hash != ""
+    actual_hash = extract.convert_image_to_hash(img_content_bytes)
+    assert actual_hash
 
 
-def test_download_image_local(img_resource_dir, hashes):
+def test_download_image_local(img_resource_dir):
     path = os.path.join(img_resource_dir, "tmp.jpg")
-    success = extract.download_image_local(url=IMG_URL, path=path, hashes=hashes)
-    assert success
-    assert len(hashes) == 3
-    actual_new_hash = hashes[2]
-    assert actual_new_hash != ""
+    actual_uid = extract.download_image_local(url=IMG_URL, path=path)
+    assert actual_uid
 
 
 def test_get_image_width_and_height(img):

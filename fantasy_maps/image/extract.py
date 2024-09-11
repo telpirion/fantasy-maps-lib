@@ -76,7 +76,11 @@ def get_image_width_and_height(path):
     return (math.floor(w), math.floor(h))
 
 
-def compute_vtt_data(width, height, columns, rows):
+def compute_vtt_data(*,
+                     width: int,
+                     height: int,
+                     columns: int,
+                     rows: int) -> Mapping[str, Mapping]:
     """Calculate the VTT values for the image.
 
     Arguments:
