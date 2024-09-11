@@ -89,6 +89,9 @@ def make_nice_filename(name: str) -> str:
         tokens = tokens[:6]  # Arbitrarily keep new names to six words or less
         new_name = "_".join(tokens)
 
+    # Remove any sensitive characters
+    new_name = re.sub(r'[\/|;|\']+', '', new_name)
+
     return f"{new_name}.{dims[0]}x{dims[1]}.jpg"
 
 
