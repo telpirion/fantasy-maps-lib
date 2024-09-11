@@ -19,12 +19,11 @@ import math
 import requests
 
 
-def convert_image_to_hash(content, hashes):
+def convert_image_to_hash(content: str) -> str:
     """Convert image data to hash value (str).
 
     Arguments:
         content (byte array): the image
-        hashes (list): a list of hashes from converted strings
 
     Return:
         Bool. Indicates whether the process was success.
@@ -34,40 +33,31 @@ def convert_image_to_hash(content, hashes):
     sha1.update(content)
     jpg_hash = sha1.hexdigest()
 
-    if jpg_hash in hashes:
-        hashes.append('')
-        return False
-
-    hashes.append(jpg_hash)
-    return True
+    return jpg_hash
 
 
-def download_image_local(url, path, hashes):
+def download_image_local(*, url: str, path: str) -> str:
     """Download an image from the internet to local file system.
 
     Arguments:
         url (str): the image to download
         path (str): the local path to save the image.
-        hashes (list): the list of UIDs for downloaded images
 
     Returns:
-        Bool. Indicates whether downloading the image was successful.
+        Hash value (str) of image file
     """
 
     r = requests.get(url, stream=True)
     if r.status_code == 200:
         r.raw.decode_content = True
+        uid = convert_image_to_hash(r.content)
 
-        is_unique = convert_image_to_hash(r.content, hashes)
-        if not is_unique:
-            return False
-
-        with open(path, 'wb') as f:
+        with open(path, "wb") as f:
             f.write(r.content)
-    else:
-        return False
 
-    return True
+        return uid
+
+    return ""
 
 
 def get_image_width_and_height(path):
@@ -99,20 +89,21 @@ def compute_vtt_data(width, height, columns, rows):
     """
 
     return {
-        'cellsOffsetX': 0,  # Assumes no offset
-        'cellsOffsetY': 0,  # Assumes no offset
-        'imageWidth': int(width),
-        'imageHeight': int(height),
-        'cellWidth': int(width / columns),
-        'cellHeight': int(height / rows),
+        "cellsOffsetX": 0,  # Assumes no offset
+        "cellsOffsetY": 0,  # Assumes no offset
+        "imageWidth": int(width),
+        "imageHeight": int(height),
+        "cellWidth": int(width / columns),
+        "cellHeight": int(height / rows),
     }
 
 
 def compute_bboxes(
-        *,
-        img_data_dict: Mapping[str, str | int] = None,
-        cell_width: int = 0,
-        cell_height: int = 0):
+    *,
+    img_data_dict: Mapping[str, str | int] = None,
+    cell_width: int = 0,
+    cell_height: int = 0,
+):
     """Determines bounding boxes for image object detection.
 
     Arguments:
@@ -127,42 +118,47 @@ def compute_bboxes(
     bboxes = []
     try:
         if img_data_dict:
-            width = img_data_dict['width']
-            height = img_data_dict['height']
-            columns = img_data_dict['columns']
-            rows = img_data_dict['rows']
+            width = img_data_dict["width"]
+            height = img_data_dict["height"]
+            columns = img_data_dict["columns"]
+            rows = img_data_dict["rows"]
         else:
             return bboxes
 
         BORDER = 1  # 1px border around the outside of the cell
-        LABEL = 'cell'
+        LABEL = "cell"
 
         x_coords = []
         curr_x_min = cell_width - BORDER
         curr_x_max = (2 * cell_width) + BORDER
         for _ in range(0, columns - 2):
-            x_coords.append({
-                'xMin': curr_x_min / width,
-                'xMax': curr_x_max / width,
-            })
+            x_coords.append(
+                {
+                    "xMin": curr_x_min / width,
+                    "xMax": curr_x_max / width,
+                }
+            )
             curr_x_min += cell_width
             curr_x_max += cell_width
 
         curr_y_min = cell_height - BORDER
         curr_y_max = (2 * cell_height) + BORDER
         for _ in range(0, rows - 2):
-            tmp_bboxes = [{
-                'xMax': x['xMax'],
-                'xMin': x['xMin'],
-                'yMax': curr_y_max / height,
-                'yMin': curr_y_min / height,
-                'displayName': LABEL,
-            } for x in x_coords]
+            tmp_bboxes = [
+                {
+                    "xMax": x["xMax"],
+                    "xMin": x["xMin"],
+                    "yMax": curr_y_max / height,
+                    "yMin": curr_y_min / height,
+                    "displayName": LABEL,
+                }
+                for x in x_coords
+            ]
             bboxes = bboxes + tmp_bboxes
             curr_y_min += cell_height
             curr_y_max += cell_height
 
     except Exception:
-        print(f'Error: {img_data_dict}')
+        print(f"Error: {img_data_dict}")
 
     return bboxes

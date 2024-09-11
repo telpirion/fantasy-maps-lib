@@ -61,27 +61,31 @@ def compute_shard_coordinates(
         y_min = start_row * cell_height
         x_max = (start_col + shard_cols) * cell_width
         y_max = (start_row + shard_rows) * cell_height
-        shards.append((
-            x_min,
-            y_min,
-            x_max,
-            y_max,
-            shard_cols,
-            shard_rows,
-        ))
+        shards.append(
+            (
+                x_min,
+                y_min,
+                x_max,
+                y_max,
+                shard_cols,
+                shard_rows,
+            )
+        )
 
     return shards
 
 
-def create_shard(*,
-                 x_min: int,
-                 y_min: int,
-                 x_max: int,
-                 y_max: int,
-                 cols: int,
-                 rows: int,
-                 img_path: str,
-                 parent_id: str) -> Union[Dict[str, Union[str, int]], None]:
+def create_shard(
+    *,
+    x_min: int,
+    y_min: int,
+    x_max: int,
+    y_max: int,
+    cols: int,
+    rows: int,
+    img_path: str,
+    parent_id: str,
+) -> Union[Dict[str, Union[str, int]], None]:
     """Crops and saves an image.
 
     Arguments:
@@ -105,11 +109,8 @@ def create_shard(*,
 
         # Get new filepath name
         s_path = create_shard_path(
-            path=img_path, 
-            x_min=x_min,
-            y_min=y_min,
-            cols=cols,
-            rows=rows)
+            path=img_path, x_min=x_min, y_min=y_min, cols=cols, rows=rows
+        )
 
         # Get new UID
         hashes = []
@@ -118,29 +119,26 @@ def create_shard(*,
         shard.save(s_path)
 
         d = {
-            'Width': math.floor(x_max - x_min),
-            'Height': math.floor(y_max - y_min),
-            'Columns': cols,
-            'Rows': rows,
-            'UID': hashes[0],
-            'Path': s_path,
-            'IsShard': True,
-            'Parent': parent_id,
+            "Width": math.floor(x_max - x_min),
+            "Height": math.floor(y_max - y_min),
+            "Columns": cols,
+            "Rows": rows,
+            "UID": hashes[0],
+            "Path": s_path,
+            "IsShard": True,
+            "Parent": parent_id,
         }
 
     except SystemError:
-        print(f'Error: {img_path}, bounds: {x_max},{y_max}')
+        print(f"Error: {img_path}, bounds: {x_max},{y_max}")
         return None
 
     return d
 
 
-def create_shard_path(*,
-                      path: str,
-                      x_min: int,
-                      y_min: int,
-                      cols: int,
-                      rows: int) -> str:
+def create_shard_path(
+    *, path: str, x_min: int, y_min: int, cols: int, rows: int
+) -> str:
     """Convert an image path string to new string.
 
     Assumes the image path is of the format:
@@ -156,10 +154,10 @@ def create_shard_path(*,
     Returns:
         New image path as str
     """
-    file_name_paths = path.split('/')
-    paths = file_name_paths[-1].split('.')
-    metadata = f'{math.floor(x_min)}_{math.floor(y_min)}.{cols}x{rows}'
+    file_name_paths = path.split("/")
+    paths = file_name_paths[-1].split(".")
+    metadata = f"{math.floor(x_min)}_{math.floor(y_min)}.{cols}x{rows}"
     paths.insert(1, metadata)
-    s_path = '.'.join(paths)
+    s_path = ".".join(paths)
     file_name_paths[-1] = s_path
-    return '/'.join(file_name_paths)
+    return "/".join(file_name_paths)

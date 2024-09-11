@@ -38,7 +38,7 @@ class ProcessedGridImage:
           bboxes: the bounding boxes of the objects detected on the image
           confidences: the confidence scores of the objects detected
           on the image
-          drift_amount: a fudge factor for normalizing bounding boxes 
+          drift_amount: a fudge factor for normalizing bounding boxes
           outside of the bounds of the actual gridlines
           local_file_uri: the filepath to the image file, local file
           gcs_file_uri: the Cloud Storage URI (gs://) to the image file
@@ -71,8 +71,7 @@ class ProcessedGridImage:
         return str(self.get_normalized_json_dnd())
 
     def show(self):
-        """Shows the predicted bounding boxes overlaid on the original image.
-        """
+        """Shows the predicted bounding boxes overlaid on the original image."""
         if len(self.bboxes_on_image) == 0:
             self._compute_actual_bboxes()
 
@@ -381,8 +380,7 @@ class ProcessedGridImage:
             )
 
 
-def analyze_annotation_results(result, *, 
-                               local_file_uri) -> ProcessedGridImage:
+def analyze_annotation_results(result, *, local_file_uri) -> ProcessedGridImage:
     """Converts Vertex image object detection prediction to ProcessedGridImage.
 
     Args:
