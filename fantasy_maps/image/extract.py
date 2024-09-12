@@ -122,10 +122,10 @@ def compute_bboxes(
     bboxes = []
     try:
         if img_data_dict:
-            width = img_data_dict["width"]
-            height = img_data_dict["height"]
-            columns = img_data_dict["columns"]
-            rows = img_data_dict["rows"]
+            width = img_data_dict["Width"]
+            height = img_data_dict["Height"]
+            columns = img_data_dict["Columns"]
+            rows = img_data_dict["Rows"]
         else:
             return bboxes
 

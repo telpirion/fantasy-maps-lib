@@ -53,7 +53,30 @@ def img_data_dict(img):
     return {"width": img[1], "height": img[2], "columns": img[3], "rows": img[4]}
 
 
-def test_convert_image_to_hash(img_content_bytes, hashes):
+@pytest.fixture
+def img_data_dict_edge():
+    return {
+        'Title': 'Canal Street [14x20] - 5 variations: canal, rain, festival, cat town, floating market', 'Post': '',
+        'ID': '1fecohw', 
+        'URL': 'https://i.redd.it/85fbl81s57od1.jpeg',
+        'LocalPath': 'reddit_maps_data/canal_street_variations_canal_rain_festival.14x20.jpg',
+        'UID': '9cfae11a756703b5c752f89611e08ddaee123149',
+        'Width': 560,
+        'Height': 800,
+        'Columns': 14,
+        'Rows': 20,
+        'VTT': {
+            'cellsOffsetX': 0,
+            'cellsOffsetY': 0,
+            'imageWidth': 560,
+            'imageHeight': 800,
+            'cellWidth': 40,
+            'cellHeight': 40
+        },
+        'BBoxes': {'bboxes': []}}
+
+
+def test_convert_image_to_hash(img_content_bytes):
     actual_hash = extract.convert_image_to_hash(img_content_bytes)
     assert actual_hash
 
