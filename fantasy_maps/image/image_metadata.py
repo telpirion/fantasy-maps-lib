@@ -13,7 +13,7 @@
 # limitations under the License.
 import json
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Mapping, Union, Sequence
 
 
@@ -53,7 +53,7 @@ class ImageMetadata:
     columns: int = 0
     rows: int = 0
     uid: str = ''
-    bboxes: Sequence[BBox] = []
+    bboxes: Sequence[BBox] = field(default_factory=list)
     cell_offset_x: int = 0
     cell_offset_y: int = 0
 
