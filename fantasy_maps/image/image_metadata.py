@@ -11,7 +11,31 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import json
+
 from dataclasses import dataclass
+from typing import Mapping, Union, Sequence
+
+
+@dataclass
+class BBox:
+    x_min: float
+    x_max: float
+    y_min: float
+    y_max: float
+    label: str
+
+    def to_dict(self) -> Mapping[str, Union[float, str]]:
+        return {
+            'xMin': self.x_min,
+            'xMax': self.x_max,
+            'yMin': self.y_min,
+            'yMax': self.y_max,
+            'displayName': self.label,
+        }
+
+    def __str__(self):
+        return json.dumps(self.to_dict())
 
 
 @dataclass
@@ -23,3 +47,28 @@ class ImageMetadata:
     cell_height: int
     columns: int
     rows: int
+    uid: str
+    url: str
+    rid: str
+    title: str
+    bboxes: Sequence[BBox]
+
+    # Assume that there is no cell offset as a default
+    cell_offset_x: int = 0
+    cell_offset_y: int = 0
+
+    def to_dict(self) -> Mapping[str, Union[str, int, float, None]]:
+        return self.__dict__
+
+    def __str__(self):
+        return json.dumps(self.to_dict())
+
+    def to_vtt(self):
+        return {
+            'imageHeight': self.height,
+            'imageWidth': self.width,
+            'cellHeight': self.cell_height,
+            'cellWidth': self.cell_width,
+            'cellOffsetX': self.cell_offset_x,
+            'cellOffsetY': self.cell_offset_y,
+        }
