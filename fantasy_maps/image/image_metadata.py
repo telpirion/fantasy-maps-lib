@@ -23,7 +23,7 @@ class BBox:
     x_max: float
     y_min: float
     y_max: float
-    label: str
+    label: str = 'grid_cell'
 
     def to_dict(self) -> Mapping[str, Union[float, str]]:
         return {
@@ -40,20 +40,20 @@ class BBox:
 
 @dataclass
 class ImageMetadata:
-    path: str
-    width: int
-    height: int
-    cell_width: int
-    cell_height: int
-    columns: int
-    rows: int
-    uid: str
     url: str
     rid: str
     title: str
-    bboxes: Sequence[BBox]
 
-    # Assume that there is no cell offset as a default
+    # Set default values
+    path: str = ''
+    width: int = 0
+    height: int = 0
+    cell_width: int = 0
+    cell_height: int = 0
+    columns: int = 0
+    rows: int = 0
+    uid: str = ''
+    bboxes: Sequence[BBox] = []
     cell_offset_x: int = 0
     cell_offset_y: int = 0
 
