@@ -26,6 +26,9 @@ def img() -> ImageMetadata:
     )
     test_image_url = os.path.join(test_image_dir, "gridded-ruined-keep.jpg")
     return ImageMetadata(
+        title='Gridded Ruined Keep',
+        rid='dummyID',
+        url='dummy-url',
         path=test_image_url,
         width=640,
         height=640,
