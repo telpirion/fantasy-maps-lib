@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from PIL import Image
-from typing import Mapping
 
 import hashlib
 import math
 import requests
+
+from .image_metadata import ImageMetadata, BBox
 
 
 def convert_image_to_hash(content: str) -> str:
@@ -76,37 +77,9 @@ def get_image_width_and_height(path):
     return (math.floor(w), math.floor(h))
 
 
-def compute_vtt_data(*,
-                     width: int,
-                     height: int,
-                     columns: int,
-                     rows: int) -> Mapping[str, Mapping]:
-    """Calculate the VTT values for the image.
-
-    Arguments:
-        width (int):
-        height (int):
-        columns (int):
-        rows (int):
-    Returns:
-        Dict.
-    """
-
-    return {
-        "cellsOffsetX": 0,  # Assumes no offset
-        "cellsOffsetY": 0,  # Assumes no offset
-        "imageWidth": int(width),
-        "imageHeight": int(height),
-        "cellWidth": int(width / columns),
-        "cellHeight": int(height / rows),
-    }
-
-
 def compute_bboxes(
     *,
-    img_data_dict: Mapping[str, str | int] = None,
-    cell_width: int = 0,
-    cell_height: int = 0,
+    img_metadata: ImageMetadata,
 ):
     """Determines bounding boxes for image object detection.
 
@@ -121,11 +94,13 @@ def compute_bboxes(
     """
     bboxes = []
     try:
-        if img_data_dict:
-            width = img_data_dict["Width"]
-            height = img_data_dict["Height"]
-            columns = img_data_dict["Columns"]
-            rows = img_data_dict["Rows"]
+        if img_metadata:
+            width = img_metadata.width
+            height = img_metadata.height
+            columns = img_metadata.columns
+            rows = img_metadata.rows
+            cell_width = img_metadata.cell_width
+            cell_height = img_metadata.cell_height
         else:
             return bboxes
 
@@ -149,13 +124,13 @@ def compute_bboxes(
         curr_y_max = (2 * cell_height) + BORDER
         for _ in range(0, rows - 2):
             tmp_bboxes = [
-                {
-                    "xMax": x["xMax"],
-                    "xMin": x["xMin"],
-                    "yMax": curr_y_max / height,
-                    "yMin": curr_y_min / height,
-                    "displayName": LABEL,
-                }
+                BBox(
+                    x_max=x["xMax"],
+                    x_min=x["xMin"],
+                    y_max=curr_y_max / height,
+                    y_min=curr_y_min / height,
+                    label=LABEL,
+                )
                 for x in x_coords
             ]
             bboxes = bboxes + tmp_bboxes
@@ -163,6 +138,6 @@ def compute_bboxes(
             curr_y_max += cell_height
 
     except Exception:
-        print(f"Error: {img_data_dict}")
+        print(f"Error: {img_metadata}")
 
     return bboxes

@@ -40,6 +40,8 @@ class BBox:
 
 @dataclass
 class ImageMetadata:
+    '''Dataclass for storing information about a FantasyMap. 
+    '''
     url: str
     rid: str
     title: str
@@ -50,8 +52,8 @@ class ImageMetadata:
     height: int = 0
     cell_width: int = 0
     cell_height: int = 0
-    columns: int = 0
-    rows: int = 0
+    columns: int = 1
+    rows: int = 1
     uid: str = ''
     bboxes: Sequence[BBox] = field(default_factory=list)
     cell_offset_x: int = 0
@@ -64,11 +66,17 @@ class ImageMetadata:
         return json.dumps(self.to_dict())
 
     def to_vtt(self):
+        if (self.columns > 1 and self.cell_width == 0):
+            self.cell_width = int(self.width / self.columns)
+
+        if (self.rows > 1 and self.cell_height == 0):
+            self.cell_height = int(self.height / self.rows)
+
         return {
-            'imageHeight': self.height,
-            'imageWidth': self.width,
+            'imageHeight': int(self.height),
+            'imageWidth': int(self.width),
             'cellHeight': self.cell_height,
             'cellWidth': self.cell_width,
-            'cellOffsetX': self.cell_offset_x,
-            'cellOffsetY': self.cell_offset_y,
+            'cellsOffsetX': self.cell_offset_x,
+            'cellsOffsetY': self.cell_offset_y,
         }
