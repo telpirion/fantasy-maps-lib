@@ -35,7 +35,7 @@ class BBox:
         }
 
     def __str__(self):
-        return json.dumps(self.to_dict())
+        return str(self.to_dict())
 
 
 @dataclass
