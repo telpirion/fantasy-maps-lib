@@ -94,8 +94,7 @@ def create_shard(
         y_max (int): the bottom-most point, relative to the parent image
         cols (cols): the grid columns in this shard
         rows (rows): the grid rows in this shard
-        img_path (str): the parent image's local path
-        parent_id (str): the parent image's UID
+        parent_img (ImageMetadata): metadata of the parent image
 
     Returns:
         ImageMetadata object representing the new image shard
@@ -118,6 +117,9 @@ def create_shard(
 
         shard.save(s_path)
         d = ImageMetadata(
+            rid=parent_img.rid,
+            title=parent_img.title,
+            url=parent_img.url,
             width=math.floor(x_max - x_min),
             height=math.floor(y_max - y_min),
             columns=cols,

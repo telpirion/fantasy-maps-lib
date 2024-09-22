@@ -54,18 +54,17 @@ def test_compute_shard_coordinates(img):
 
 
 def test_create_shard(img):
-    actual_shard_dict = shards.create_shard(
+    actual_shard_metadata = shards.create_shard(
         x_min=0,
         x_max=320,
         y_min=0,
         y_max=320,
-        img_path=img.path,
         cols=10,
         rows=10,
-        parent_id="fakehash1",
+        parent_img=img,
     )
-    assert actual_shard_dict
-    actual_shard_url = actual_shard_dict["Path"]
+    assert actual_shard_metadata
+    actual_shard_url = actual_shard_metadata.path
     assert os.path.exists(actual_shard_url)
 
     # clean up
