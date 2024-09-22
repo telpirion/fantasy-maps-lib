@@ -83,9 +83,8 @@ def create_shard(
     y_max: int,
     cols: int,
     rows: int,
-    img_path: str,
-    parent_id: str,
-) -> Union[Dict[str, Union[str, int]], None]:
+    parent_img: ImageMetadata,
+) -> Union[ImageMetadata, None]:
     """Crops and saves an image.
 
     Arguments:
@@ -99,39 +98,38 @@ def create_shard(
         parent_id (str): the parent image's UID
 
     Returns:
-        Dict local path, UID, width, height, columns, and rows
+        ImageMetadata object representing the new image shard
 
     """
+    d = None
     try:
 
-        img = Image.open(img_path)
+        img = Image.open(parent_img.path)
         shard = img.crop((int(x_min), int(y_min), int(x_max), int(y_max)))
 
         # Get new filepath name
         s_path = create_shard_path(
-            path=img_path, x_min=x_min, y_min=y_min, cols=cols, rows=rows
+            path=parent_img.path, x_min=x_min, y_min=y_min, cols=cols,
+            rows=rows
         )
 
         # Get new UID
-        hashes = []
         uid = convert_image_to_hash(shard.tobytes())
-        hashes.append(uid)
 
         shard.save(s_path)
-
-        d = {
-            "Width": math.floor(x_max - x_min),
-            "Height": math.floor(y_max - y_min),
-            "Columns": cols,
-            "Rows": rows,
-            "UID": hashes[0],
-            "Path": s_path,
-            "IsShard": True,
-            "Parent": parent_id,
-        }
+        d = ImageMetadata(
+            width=math.floor(x_max - x_min),
+            height=math.floor(y_max - y_min),
+            columns=cols,
+            rows=rows,
+            uid=uid,
+            path=s_path,
+            is_shard=True,
+            parent_uid=parent_img.uid
+        )
 
     except SystemError:
-        print(f"Error: {img_path}, bounds: {x_max},{y_max}")
+        print(f"Error: {parent_img}, bounds: {x_max},{y_max}")
         return None
 
     return d

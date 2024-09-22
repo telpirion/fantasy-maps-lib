@@ -55,6 +55,8 @@ class ImageMetadata:
     columns: int = 1
     rows: int = 1
     uid: str = ''
+    parent_uid: str = ''
+    is_shard: bool = False
     bboxes: Sequence[BBox] = field(default_factory=list)
     cell_offset_x: int = 0
     cell_offset_y: int = 0
