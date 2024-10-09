@@ -39,17 +39,17 @@ def setup():
 
 def test_save_training_data_to_gcs_integration(setup):
 
-    project, location, endpoint_id, filepath_1, filepath_2, timestamp, bucket = setup
+    project, location, endpoint, fpath_1, fpath_2, timestamp, bucket = setup
 
     aip.init(project=project, location=location)
 
     # Get the saved endpoint
     endpoint_name = f"projects/{project}/locations/{location}/endpoints/"
-    endpoint_name += endpoint_id
+    endpoint_name += endpoint
     endpoint = aip.Endpoint(endpoint_name)
 
     # Run prediction on the first image
-    with open(filepath_1, "rb") as f:
+    with open(fpath_1, "rb") as f:
         file_content = f.read()
 
     encoded_content = base64.b64encode(file_content).decode("utf-8")
@@ -64,7 +64,7 @@ def test_save_training_data_to_gcs_integration(setup):
     assert len(response.predictions) > 0
 
     processed_image = processed_grid_image.analyze_annotation_results(
-        {"prediction": response.predictions[0]}, local_file_uri=filepath_1
+        {"prediction": response.predictions[0]}, local_file_uri=fpath_1
     )
     processed_image_str = str(processed_image)
 
@@ -77,7 +77,7 @@ def test_save_training_data_to_gcs_integration(setup):
 
     # TODO(telpirion): Put some asserts here?
     # Run prediction on the second image
-    with open(filepath_2, "rb") as f:
+    with open(fpath_2, "rb") as f:
         file_content = f.read()
 
     encoded_content_2 = base64.b64encode(file_content).decode("utf-8")
@@ -92,7 +92,7 @@ def test_save_training_data_to_gcs_integration(setup):
     assert len(response2.predictions) > 0
 
     processed_image2 = processed_grid_image.analyze_annotation_results(
-        {"prediction": response2.predictions[0]}, local_file_uri=filepath_2
+        {"prediction": response2.predictions[0]}, local_file_uri=fpath_2
     )
     processed_image2_str = str(processed_image2)
 
