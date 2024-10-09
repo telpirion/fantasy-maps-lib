@@ -34,12 +34,12 @@ def img(img_resource_dir):
     test_image_url = os.path.join(img_resource_dir, "small_cemetary.17x22.jpg")
     # img_path, width, height, columns, rows
     return ImageMetadata(
-        url='dummy-url',
-        title='small cemetary [17x22]',
-        rid='dummyId',
+        url="dummy-url",
+        title="small cemetary [17x22]",
+        rid="dummyId",
         path=test_image_url,
         width=564,
-        height=729
+        height=729,
     )
 
 
@@ -53,17 +53,17 @@ def img_content_bytes(img):
 @pytest.fixture
 def img_metadata():
     return ImageMetadata(
-        url='https://i.redd.it/85fbl81s57od1.jpeg',
-        rid='1fecohw',
-        title='''Canal Street [14x20] - 5 variations: canal, rain, festival,
-        cat town, floating market''',
+        url="https://i.redd.it/85fbl81s57od1.jpeg",
+        rid="1fecohw",
+        title="""Canal Street [14x20] - 5 variations: canal, rain, festival,
+        cat town, floating market""",
         width=560,
         height=800,
         columns=14,
         rows=20,
-        uid='9cfae11a756703b5c752f89611e08ddaee123149',
+        uid="9cfae11a756703b5c752f89611e08ddaee123149",
         cell_height=40,
-        cell_width=40
+        cell_width=40,
     )
 
 
@@ -96,9 +96,7 @@ def test_compute_vtt_data(img_metadata):
 
 
 def test_compute_bboxes(img_metadata):
-    actual_bboxes = extract.compute_bboxes(
-        img_metadata=img_metadata
-    )
+    actual_bboxes = extract.compute_bboxes(img_metadata=img_metadata)
     assert len(actual_bboxes) != 0
 
     actual_first_bbox = actual_bboxes[0]

@@ -19,11 +19,11 @@ from fantasy_maps.reddit import posts
 
 @pytest.fixture
 def post_name():
-    return 'Unmarked Mine [35x49] - Battlemap/ Dungeon	'
+    return "Unmarked Mine [35x49] - Battlemap/ Dungeon	"
 
 
 def test_posts_make_nice_filename(post_name):
     actual_filename = posts.make_nice_filename(post_name)
 
     assert actual_filename
-    assert '/' not in actual_filename
+    assert "/" not in actual_filename

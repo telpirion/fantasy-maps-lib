@@ -21,21 +21,25 @@ from google.cloud import aiplatform as aip
 
 @pytest.fixture
 def setup():
-    filename_1 = "resources/gridded-ruined-keep.jpg"
-    filepath_1 = os.path.join(os.path.dirname(__file__), filename_1)
-    filename_2 = "resources/small-cemetary.jpg"
-    filepath_2 = os.path.join(os.path.dirname(__file__), filename_2)
-
+    filename_1 = "../resources/gridded-ruined-keep.jpg"
+    filepath_1 = os.path.normpath(os.path.join(os.path.dirname(__file__),
+                                               filename_1))
+    filename_2 = "../resources/small_cemetary.17x22.jpg"
+    filepath_2 = os.path.normpath(os.path.join(os.path.dirname(__file__),
+                                               filename_2))
     project = os.environ["GCP_PROJECT"]
     location = "us-central1"
-    endpoint_id = "835681613667893248"
+    endpoint_id = "3259260327983841280"
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    yield project, location, endpoint_id, filepath_1, filepath_2, timestamp
+    bucket = os.environ["BUCKET_NAME"]
+
+    yield (project, location, endpoint_id, filepath_1, filepath_2, timestamp,
+           bucket)
 
 
 def test_save_training_data_to_gcs_integration(setup):
 
-    project, location, endpoint_id, filepath_1, filepath_2, timestamp = setup
+    project, location, endpoint_id, filepath_1, filepath_2, timestamp, bucket = setup
 
     aip.init(project=project, location=location)
 
@@ -68,7 +72,7 @@ def test_save_training_data_to_gcs_integration(setup):
     assert processed_image_str.find("ruined") > -1
 
     processed_image.store_image_as_dataset_row(
-        "video-erschmid", f"fantasy-maps-tests/integration-test-{timestamp}"
+        bucket, f"fantasy-maps-tests/integration-test-{timestamp}"
     )
 
     # TODO(telpirion): Put some asserts here?
@@ -96,5 +100,5 @@ def test_save_training_data_to_gcs_integration(setup):
     assert processed_image2_str.find("cemetary") > -1
 
     processed_image2.store_image_as_dataset_row(
-        "video-erschmid", f"fantasy-maps-tests/integration-test-{timestamp}"
+        bucket, f"fantasy-maps-tests/integration-test-{timestamp}"
     )

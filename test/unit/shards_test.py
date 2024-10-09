@@ -26,9 +26,9 @@ def img() -> ImageMetadata:
     )
     test_image_url = os.path.join(test_image_dir, "gridded-ruined-keep.jpg")
     return ImageMetadata(
-        title='Gridded Ruined Keep',
-        rid='dummyID',
-        url='dummy-url',
+        title="Gridded Ruined Keep",
+        rid="dummyID",
+        url="dummy-url",
         path=test_image_url,
         width=640,
         height=640,
@@ -75,5 +75,5 @@ def test_create_shard_path(img):
     actual_str = shards.create_shard_path(
         path=img.path, x_min=0, y_min=0, cols=10, rows=10
     )
-    assert actual_str != ''
-    assert actual_str.index('.jpg') != -1
+    assert actual_str != ""
+    assert actual_str.index(".jpg") != -1
