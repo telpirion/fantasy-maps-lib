@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from PIL import Image
+from PIL.Image import DecompressionBombError, DecompressionBombWarning
 
 import hashlib
 import math
@@ -70,9 +71,13 @@ def get_image_width_and_height(path):
     Returns:
         Tuple of width, height
     """
+    try:
+        img = Image.open(path)
+        w, h = img.size
 
-    img = Image.open(path)
-    w, h = img.size
+    except DecompressionBombError:
+        print(f"Image too large: {path}")
+        return (0, 0)
 
     return (math.floor(w), math.floor(h))
 
@@ -137,7 +142,7 @@ def compute_bboxes(
             curr_y_min += cell_height
             curr_y_max += cell_height
 
-    except Exception:
-        print(f"Error: {img_metadata}")
+    except Exception as e:
+        print(f"Error: {e}\n{img_metadata}:")
 
     return bboxes

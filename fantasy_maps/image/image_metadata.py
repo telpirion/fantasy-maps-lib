@@ -38,28 +38,38 @@ class BBox:
         return str(self.to_dict())
 
 
-@dataclass
 class ImageMetadata:
     '''Dataclass for storing information about a FantasyMap. 
     '''
+    _columns: int = 1
+    _rows: int = 1
+    _width: int = 0
+    _height: int = 0
+
     url: str
     rid: str
     title: str
 
     # Set default values
     path: str = ''
-    width: int = 0
-    height: int = 0
-    cell_width: int = 0
-    cell_height: int = 0
-    columns: int = 1
-    rows: int = 1
+
     uid: str = ''
     parent_uid: str = ''
     is_shard: bool = False
     bboxes: Sequence[BBox] = field(default_factory=list)
+    cell_width: int = 0
+    cell_height: int = 0
     cell_offset_x: int = 0
     cell_offset_y: int = 0
+    is_usable: bool = True
+
+    def __init__(self, url: str, rid: str, title: str, **kwargs):
+        self.url = url
+        self.rid = rid
+        self.title = title
+
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
     def to_dict(self) -> Mapping[str, Union[str, int, float, None]]:
         return self.__dict__
@@ -82,3 +92,46 @@ class ImageMetadata:
             'cellsOffsetX': self.cell_offset_x,
             'cellsOffsetY': self.cell_offset_y,
         }
+
+    def _calculate_cell_dimensions(self):
+        if not (self._width and self._height and self._rows and self._columns):
+            return
+
+        self.cell_width = int(self._width / self._columns)
+        self.cell_height = int(self._height / self._rows)
+
+    @property
+    def width(self):
+        return self._width
+
+    @width.setter
+    def width(self, w):
+        self._width = w
+        self._calculate_cell_dimensions()
+
+    @property
+    def height(self):
+        return self._height
+
+    @height.setter
+    def height(self, h):
+        self._height = h
+        self._calculate_cell_dimensions()
+
+    @property
+    def columns(self):
+        return self._columns
+
+    @columns.setter
+    def columns(self, c):
+        self._columns = c
+        self._calculate_cell_dimensions()
+
+    @property
+    def rows(self):
+        return self._rows
+
+    @rows.setter
+    def rows(self, r):
+        self._rows = r
+        self._calculate_cell_dimensions()

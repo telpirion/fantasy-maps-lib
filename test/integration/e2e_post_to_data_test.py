@@ -21,6 +21,9 @@ from fantasy_maps.image.image_metadata import ImageMetadata
 SUBREDDIT = "battlemaps"
 COLUMNS = ["Title", "Post", "ID", "URL"]
 ROOT_DIR = 'tmp'
+NUM_SHARDS = 3
+SHARD_COLS = 15
+SHARD_ROWS = 15
 
 
 def test_end_to_end_post_to_data(reddit_credentials,
@@ -50,7 +53,7 @@ def test_end_to_end_post_to_data(reddit_credentials,
     assert actual_img_metadata
     assert actual_img_metadata[0].title != ""
 
-    #endregion
+    # endregion
 
     # region get-image
     local_reddit_data_dir = tmp_path / "reddit_maps_data"
@@ -82,7 +85,7 @@ def test_end_to_end_post_to_data(reddit_credentials,
     assert actual_first_img.uid != ""
     assert actual_first_img.path != ""
 
-    #endregion
+    # endregion
 
     # region check-first-image
     w, h = extract.get_image_width_and_height(actual_first_img.path)
@@ -92,7 +95,7 @@ def test_end_to_end_post_to_data(reddit_credentials,
     actual_first_img.width = w
     actual_first_img.height = h
 
-    exp = '\.\d+x\d+\.'
+    exp = r'\.\d+x\d+\.'
     match = re.search(exp, actual_first_img.path)
     if match:
         dims = match.group()
@@ -105,8 +108,9 @@ def test_end_to_end_post_to_data(reddit_credentials,
     actual_first_img.columns = cols
     actual_first_img.rows = rows
 
-    #endregion
+    # endregion
 
+    # region calculate width, height, rows, columns
     for p in actual_img_metadata:
         if not os.path.exists(p.path):
             continue
@@ -115,6 +119,10 @@ def test_end_to_end_post_to_data(reddit_credentials,
 
         # Get width & height for original image
         w, h = extract.get_image_width_and_height(local_path)
+
+        if w == 0 or h == 0:
+            p.is_usable = False
+            continue
 
         p.width = w
         p.height = h
@@ -132,5 +140,45 @@ def test_end_to_end_post_to_data(reddit_credentials,
         if (cols * rows) <= 500:
             bboxes = extract.compute_bboxes(img_metadata=p)
             p.bboxes = bboxes
+            assert len(bboxes) > 0
+
+    # endregion
+
+    actual_img_metadata = [i for i in actual_img_metadata if i.is_usable]
 
     assert actual_img_metadata
+
+    actual_big_images = [i for i
+                         in actual_img_metadata
+                         if (i.columns * i.rows) >= 500]
+
+    assert actual_big_images
+
+    for img_metadata in actual_big_images:
+        smaller_images = shards.compute_shard_coordinates(
+            img_metadata=img_metadata,
+            num_shards=NUM_SHARDS,
+            shard_cols=SHARD_COLS,
+            shard_rows=SHARD_ROWS)
+
+        for sm_img in smaller_images:
+            print(img_metadata.path)
+            print(sm_img)
+            shard_metadata = shards.create_shard(x_min=sm_img[0],
+                                                 y_min=sm_img[1],
+                                                 x_max=sm_img[2],
+                                                 y_max=sm_img[3],
+                                                 cols=sm_img[4],
+                                                 rows=sm_img[5],
+                                                 parent_img=img_metadata)
+
+            if shard_metadata is None:
+                continue
+
+            bboxes = extract.compute_bboxes(img_metadata=shard_metadata)
+            shard_metadata.bboxes = bboxes
+            actual_img_metadata.append(shard_metadata)
+
+            assert shard_metadata
+            assert shard_metadata.uid != ""
+            assert shard_metadata.path != ""
