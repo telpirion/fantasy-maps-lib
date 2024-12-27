@@ -21,14 +21,10 @@ def store_metadata_fs(*,
     img_dict = img_metadata.to_dict()
 
     # clean up the data a little bit before upserting
-    vtt = img_metadata.to_vtt()
-    if vtt != "":
-        vtt = json.loads(vtt)
-        img_dict["vtt"] = vtt
-
     file_name = img_metadata.path.split("/")[-1]
     img_dict.pop("path", None)
     img_dict["filename"] = file_name
+    uid = img_metadata.uid
 
     # upsert the dict directly into Firestore!
     client.collection(collection_name).document(uid).set(img_dict)
