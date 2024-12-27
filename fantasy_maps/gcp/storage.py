@@ -21,7 +21,7 @@ def store_image_gcs(*, project_id: str,
     storage_client = storage.Client(project=project_id)
     bucket = storage_client.bucket(bucket_name)
 
-    local_path = img.path
+    local_path = img_metadata.path
     file_name = local_path.split("/")[-1]
     img_gcs_uri = f"gs://{bucket_name}/{prefix}/{file_name}"
     blob_name = f"{prefix}/{file_name}"
