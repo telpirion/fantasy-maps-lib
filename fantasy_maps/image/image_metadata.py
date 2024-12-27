@@ -74,8 +74,10 @@ class ImageMetadata:
 
     def to_dict(self) -> Mapping[str, Union[str, int, float, None]]:
         bb = [b.to_dict() for b in self.bboxes]
+        vtt = self.to_vtt()
         self_dict = self.__dict__
         self_dict['bboxes'] = bb
+        self_dict['vtt'] = vtt
         return self_dict
 
     def __str__(self):
