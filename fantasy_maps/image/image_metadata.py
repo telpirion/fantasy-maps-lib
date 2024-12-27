@@ -52,7 +52,7 @@ class ImageMetadata:
 
     # Set default values
     path: str = ''
-
+    gcs_uri: str = ''
     uid: str = ''
     parent_uid: str = ''
     is_shard: bool = False

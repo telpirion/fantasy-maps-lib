@@ -1,7 +1,11 @@
 from google.cloud import storage
 
+from fantasy_maps.image import ImageMetadata
 
-def store_image_gcs(*, project_id, series, bucket_name, prefix):
+def store_image_gcs(*, project_id: str, 
+                    img_metadata: ImageMetadata,
+                    bucket_name: str,
+                    prefix: str):
     """Copies a local image to Google Cloud Storage.
 
     Arguments:
@@ -17,7 +21,7 @@ def store_image_gcs(*, project_id, series, bucket_name, prefix):
     storage_client = storage.Client(project=project_id)
     bucket = storage_client.bucket(bucket_name)
 
-    local_path = series["Path"]
+    local_path = img.path
     file_name = local_path.split("/")[-1]
     img_gcs_uri = f"gs://{bucket_name}/{prefix}/{file_name}"
     blob_name = f"{prefix}/{file_name}"
