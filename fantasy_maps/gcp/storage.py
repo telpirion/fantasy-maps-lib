@@ -10,7 +10,7 @@ def store_image_gcs(*, project_id: str,
 
     Arguments:
         project_id (str): the Google Cloud Project ID to use
-        series (pd.Series): a Pandas Series with "Path" column
+        img_metadata (ImageMetadata): Metadata of the file to save
         bucket_name (str): the Cloud Storage bucket to use
         prefix (str): the prefix or "folder" to use in the bucket
 
