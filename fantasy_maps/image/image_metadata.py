@@ -67,12 +67,16 @@ class ImageMetadata:
         self.url = url
         self.rid = rid
         self.title = title
+        self.bboxes = []
 
         for k, v in kwargs.items():
             setattr(self, k, v)
 
     def to_dict(self) -> Mapping[str, Union[str, int, float, None]]:
-        return self.__dict__
+        bb = [b.to_dict() for b in self.bboxes]
+        self_dict = self.__dict__
+        self_dict['bboxes'] = bb
+        return self_dict
 
     def __str__(self):
         return json.dumps(self.to_dict())
@@ -99,6 +103,10 @@ class ImageMetadata:
 
         self.cell_width = int(self._width / self._columns)
         self.cell_height = int(self._height / self._rows)
+
+    @property
+    def num_bboxes(self) -> int:
+        return len(self.bboxes)
 
     @property
     def width(self):

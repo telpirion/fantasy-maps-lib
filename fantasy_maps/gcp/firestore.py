@@ -2,38 +2,34 @@ from google.cloud import firestore
 
 import json
 
+from fantasy_maps.image.image_metadata import ImageMetadata
 
-def store_metadata_fs(*, project_id, series, collection_name, uid):
+def store_metadata_fs(*,
+                      project_id: str,
+                      img_metadata: ImageMetadata,
+                      collection_name: str):
     """Upserts image metadata into a Firestore collection.
 
     Arguments:
         project_id (str): the Google Cloud project to store these in
-        series (pd.Series): a Pandas series with the image's metadata
+        img_metadata (ImageMetadata): the image's metadata
         collection_name (str): the Firestore collection to store the data in
     """
 
     client = firestore.Client(project=project_id)
 
-    series_dict = series.to_dict()
+    img_dict = img_metadata.to_dict()
 
     # clean up the data a little bit before upserting
-    vtt = series["VTT"]
+    vtt = img_metadata.to_vtt()
     if vtt != "":
         vtt = json.loads(vtt)
-        series_dict["VTT"] = vtt
+        img_dict["vtt"] = vtt
 
-    bboxes = series["BBoxes"]
-    if bboxes != "":
-        bboxes = json.loads(bboxes)["bboxes"]
-        series_dict["BBoxes"] = bboxes
-
-    file_name = series["Path"].split("/")[-1]
-    series_dict.pop("Path", None)
-    series_dict["filename"] = file_name
-
-    img_gcs_uri = series["GCS URI"]
-    series_dict.pop("GCS URI", None)
-    series_dict["gcsURI"] = img_gcs_uri
+    file_name = img_metadata.path.split("/")[-1]
+    img_dict.pop("path", None)
+    img_dict["filename"] = file_name
 
     # upsert the dict directly into Firestore!
-    client.collection(collection_name).document(uid).set(series_dict)
+    client.collection(collection_name).document(uid).set(img_dict)
+
